@@ -9,8 +9,8 @@ The extension is licensed under [AGPL-3.0](LICENSE.txt).
 ## Requirements
 
 * PHP v5.6+
-* CiviCRM 5.3
-* net.ourpowerbase.qrcodecheckin (https://github.com/mattwire/net.ourpowerbase.qrcodecheckin/tree/mjwconsulting).
+* CiviCRM 5.3.1+
+* net.ourpowerbase.qrcodecheckin (https://github.com/progressivetech/net.ourpowerbase.qrcodecheckin).
 
 ## Installation (Web UI)
 
