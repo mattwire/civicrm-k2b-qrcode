@@ -175,8 +175,12 @@ function k2b_qrcode_getValues($contactId, $participantId) {
 
   // Get the bus pick location (we need to look this up from a select list
   // FIXME: Replace with CustomValue.Getdisplayvalue when https://github.com/civicrm/civicrm-core/pull/13365 is merged
-  list($_, $busPickupFieldId, $_) = explode('_', $busPickupField);
-  $busPickup = CRM_Core_BAO_CustomField::displayValue($contactDetails[$busPickupField], $busPickupFieldId, $contactId);
+  $busPickupParts = explode('_', $busPickupField);
+  $busPickupFieldId = CRM_Utils_Array::value(1, $busPickupParts);
+  $busPickup = NULL;
+  if (!empty($busPickupFieldId)) {
+    $busPickup = CRM_Core_BAO_CustomField::displayValue($contactDetails[$busPickupField], $busPickupFieldId, $contactId);
+  }
 
   $codeValues = [
     'contactId' => $contactId,
