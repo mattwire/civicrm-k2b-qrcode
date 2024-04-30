@@ -135,32 +135,37 @@ function k2b_qrcode_civicrm_entityTypes(&$entityTypes) {
 }
 
 function k2b_qrcode_civicrm_qrcodecheckin_tokenValues(&$values, $contact_id, &$handled) {
-  $participant_id = qrcodecheckin_participant_id_for_contact_id($contact_id);
-  if ($participant_id) {
-    $qrcodeValues = k2b_qrcode_getValues($contact_id, $participant_id);
+  // It would be best if we had token event ids passed on from the hook params, but we don't.
+  // For now lets use the config to determine event ids.
+  $qrcode_events = \Civi::settings()->get('qrcode_events');
+  foreach ($qrcode_events as $event_id) {
+    $participant_id = qrcodecheckin_participant_id_for_contact_id($contact_id, $event_id);
+    if ($participant_id) {
+      $qrcodeValues = k2b_qrcode_getValues($contact_id, $participant_id);
 
-    // First ensure the image file is created.
-    k2b_qrcode_create_image($qrcodeValues);
+      // First ensure the image file is created.
+      k2b_qrcode_create_image($qrcodeValues);
 
-    // Get the absolute link to the image that will display the QR code.
-    $link = qrcodecheckin_get_image_url($qrcodeValues['filename']);
+      // Get the absolute link to the image that will display the QR code.
+      $link = qrcodecheckin_get_image_url($qrcodeValues['filename']);
 
-    $emailMessage = "" .
-"<div><p>Your Bus pickup details are:</p>" .
-      "<ul><li>Time: {$qrcodeValues['busTime']}</li><li>Location: {$qrcodeValues['busPickup']}</li></ul>" .
-"</div>";
+      $emailMessage = "" .
+        "<div><p>Your Bus pickup details are:</p>" .
+        "<ul><li>Time: {$qrcodeValues['busTime']}</li><li>Location: {$qrcodeValues['busPickup']}</li></ul>" .
+        "</div>";
 
-    $values['qrcodecheckin.qrcode_url'] = $link;
-    $values['qrcodecheckin.qrcode_html'] = '<div><p>Please show the QR code below to your bus driver:</p>' .
-      '<img alt="QR Code with participant details" src="' . $link .
-      '"></div><div>If you do not see a code display above, ' .
-      'please enable the display of images in your email ' .
-      'program or try accessing it <a href="' . $link . '">directly</a>. '.
-      'You may want to take a screen grab of your QR Code in case you need '.
-      'to display it when you do not have Internet access.</div>' .
-      '<br />' . $emailMessage;
+      $values['qrcodecheckin.qrcode_url_' . $event_id] = $link;
+      $values['qrcodecheckin.qrcode_html_' . $event_id] = '<div><p>Please show the QR code below to your bus driver:</p>' .
+        '<img alt="QR Code with participant details" src="' . $link .
+        '"></div><div>If you do not see a code display above, ' .
+        'please enable the display of images in your email ' .
+        'program or try accessing it <a href="' . $link . '">directly</a>. ' .
+        'You may want to take a screen grab of your QR Code in case you need ' .
+        'to display it when you do not have Internet access.</div>' .
+        '<br />' . $emailMessage;
+    }
+    $handled = TRUE;
   }
-  $handled = TRUE;
 }
 
 function k2b_qrcode_getValues($contactId, $participantId) {
@@ -188,7 +193,7 @@ function k2b_qrcode_getValues($contactId, $participantId) {
     'participantId' => $participantId,
     'busTime' => $busTime,
     'busPickup' => $busPickup,
-    'filename' => hash('sha256', $participantId + $contactDetails['hash'] + CIVICRM_SITE_KEY),
+    'filename' => hash('sha256', $participantId . $contactDetails['hash'] . CIVICRM_SITE_KEY),
   ];
 
   // For testing:
