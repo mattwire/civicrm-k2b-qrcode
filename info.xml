@@ -19,15 +19,19 @@
   <compatibility>
     <ver>6.4</ver>
   </compatibility>
-  <requires>
-    <ext>net.ourpowerbase.qrcodecheckin</ext>
-  </requires>
-  <civix>
-    <namespace>CRM/K2bQrcode</namespace>
-    <format>25.01.1</format>
-  </civix>
   <classloader>
     <psr0 prefix="CRM_" path="."/>
     <psr4 prefix="Civi\" path="Civi"/>
   </classloader>
+  <civix>
+    <namespace>CRM/K2bQrcode</namespace>
+    <format>25.01.1</format>
+  </civix>
+  <mixins>
+    <mixin>scan-classes@1.0.0</mixin>
+    <mixin>mgd-php@1.0.0</mixin>
+  </mixins>
+  <requires>
+    <ext>net.ourpowerbase.qrcodecheckin</ext>
+  </requires>
 </extension>
