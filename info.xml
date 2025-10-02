@@ -13,7 +13,7 @@
     <url desc="Support">https://mjw.pt/support/k2bqrcode</url>
     <url desc="Licensing">http://www.gnu.org/licenses/agpl-3.0.html</url>
   </urls>
-  <releaseDate>2025-10-01</releaseDate>
+  <releaseDate>2025-10-02</releaseDate>
   <version>1.0.0-dev</version>
   <develStage>beta</develStage>
   <compatibility>
@@ -29,7 +29,6 @@
   </civix>
   <mixins>
     <mixin>scan-classes@1.0.0</mixin>
-    <mixin>mgd-php@1.0.0</mixin>
   </mixins>
   <requires>
     <ext>net.ourpowerbase.qrcodecheckin</ext>
