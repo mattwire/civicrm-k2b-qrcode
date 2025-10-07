@@ -55,7 +55,20 @@ class Qrcode {
     //   - Teams are actually Households but have been re-named.
     //   - Needs to be a Team not in trash.
 
-    $currentYear = date('Y');
+    // We get the most recent event with "bus" in the title to give us the year.
+    $event = \Civi\Api4\Event::get(FALSE)
+      ->addSelect('start_date')
+      ->addWhere('title', 'CONTAINS', 'bus')
+      ->addOrderBy('start_date', 'DESC')
+      ->execute()
+      ->first();
+    if (empty($event)) {
+      $currentYear = date('Y');
+    }
+    else {
+      $currentYear = date('Y', strtotime($event['start_date']));
+    }
+
     $relationship = Relationship::get(FALSE)
       ->addSelect('contact_id_b', 'contact_id_b.Team_Type.Team_Name_manually_set_')
       ->addWhere('relationship_type_id:name', '=', 'Employee of')

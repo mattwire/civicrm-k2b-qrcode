@@ -26,6 +26,13 @@ An action is provided for SearchKit that lets you generate QRCodes for any parti
 
 ![searchkit generate qrcode action](docs/images/qrcodesearchkitaction.png)
 
+### Generate on create/edit participant
+
+See `\Civi\K2bQrcode\HookSubscriber`
+
+When a Participant record is created/edited and has status Registered,Attended or Transferred
+the QRCode image is automatically generated if it does not exist.
+
 ### Customised qrcode tokens
 
 * qrcode_url_<eventID>
@@ -37,6 +44,6 @@ Include the qrcodecheckin tokens in an email.
   
 #### The qrcode in the email will contain:
 
-* CurrentYear
-* Team Number
-* ContactID of the individual
+* CurrentYear (Actually the latest event with "Bus" in the title).
+* Team Number (A relationship to Team(Household)).
+* ContactID of the individual.
