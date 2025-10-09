@@ -9,7 +9,7 @@ The extension is licensed under [AGPL-3.0](LICENSE.txt).
 
 ## Requirements
 
-* net.ourpowerbase.qrcodecheckin (https://github.com/progressivetech/net.ourpowerbase.qrcodecheckin).
+* Version 2.2.0+ of net.ourpowerbase.qrcodecheckin (https://github.com/progressivetech/net.ourpowerbase.qrcodecheckin).
 
 ## Usage
 
