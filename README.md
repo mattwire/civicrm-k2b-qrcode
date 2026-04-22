@@ -9,7 +9,7 @@ The extension is licensed under [AGPL-3.0](LICENSE.txt).
 
 ## Requirements
 
-* Version 2.2.0+ of net.ourpowerbase.qrcodecheckin (https://github.com/progressivetech/net.ourpowerbase.qrcodecheckin).
+* Version 3.0.1+ of net.ourpowerbase.qrcodecheckin (https://github.com/progressivetech/net.ourpowerbase.qrcodecheckin).
 
 ## Usage
 
@@ -47,3 +47,9 @@ Include the qrcodecheckin tokens in an email.
 * CurrentYear (Actually the latest event with "Bus" in the title).
 * Team Number (A relationship to Team(Household)).
 * ContactID of the individual.
+
+## Support and Maintenance
+
+This extension is supported and maintained with the help and support of the CiviCRM community by [MJW](https://www.mjwconsult.co.uk).
+
+We offer paid [support and development](https://mjw.pt/support) as well as a [troubleshooting/investigation service](https://mjw.pt/investigation).
