@@ -44,50 +44,54 @@ class TokenSubscriber extends AutoService implements EventSubscriberInterface {
    * @see \CRM_Utils_Hook::tokenValues()
    */
   public static function evaluateTokens(\Civi\Token\Event\TokenValueEvent $event) {
-    foreach ($event->getRows() as $row) {
-      /** @var \Civi\Token\TokenRow $row */
-      $row->format('text/html');
-
-      $contactID = $row->context['contactId'];
-      if (empty($contactID)) {
-        \Civi::log()->debug('Not processing qrcode tokens because contactId context is not set');
-        continue;
+    $tokens = $event->getTokenProcessor()->getMessageTokens();
+    if (array_key_exists('qrcodecheckin', $tokens)) {
+      $eventIDs = [];
+      // We need to catch all the event ID tokens, but if we qrcode_html_2 and qrcode_url_2 we don't evaluate event 2 twice.
+      foreach ($tokens['qrcodecheckin'] as $token) {
+        $tokenEventID = preg_replace('/\D/', '', $token);
+        $eventIDs[$tokenEventID] = $tokenEventID;
       }
-      $eventID = $row->context['eventId'];
-      if (empty($eventID)) {
-        \Civi::log()->debug('Not processing qrcode tokens because eventId context is not set');
-        continue;
+      foreach ($event->getRows() as $row) {
+        /** @var \Civi\Token\TokenRow $row */
+        $row->format('text/html');
+
+        if (empty($row->context['contactId'])) {
+          \Civi::log()
+            ->debug('Not processing qrcode tokens because contactId context is not set');
+          continue;
+        }
+        $contactID = $row->context['contactId'];
+
+        foreach ($eventIDs as $eventID) {
+          $participantID = $row->context['participantId'] ?? qrcodecheckin_participant_id_for_contact_id($contactID, $eventID);
+          if (empty($participantID)) {
+            \Civi::log()->debug('Not processing qrcode tokens because participantId context is not set and could not get from qrcodecheckin_participant_id_for_contact_id');
+            continue;
+          }
+
+          $qrcodeValues = Qrcode::getQrcodeValues($contactID, $participantID);
+
+          // First ensure the image file is created.
+          Qrcode::createQrcodeImage($participantID, $qrcodeValues);
+
+          // Get the absolute link to the image that will display the QR code.
+          $link = qrcodecheckin_get_image_url($qrcodeValues['filename']);
+
+          $row->tokens(self::$entityName, 'qrcode_url_' . $eventID, $link);
+          $row->tokens(
+            self::$entityName,
+            'qrcode_html_' . $eventID,
+            '<div></div><img alt="QR Code with participant details" src="' . $link .
+            '"></div><div>If you do not see a code display above, ' .
+            'please enable the display of images in your email ' .
+            'program or try accessing it <a href="' . $link . '">directly</a>. ' .
+            'You may want to take a screen grab of your QR Code in case you need ' .
+            'to display it when you do not have Internet access.</div>' .
+            '<br />'
+          );
+        }
       }
-      $participantID = $row->context['participantId'] ?? qrcodecheckin_participant_id_for_contact_id($contactID, $eventID);
-      if (empty($participantID)) {
-        \Civi::log()->debug('Not processing qrcode tokens because participantId context is not set and could not get from qrcodecheckin_participant_id_for_contact_id');
-        continue;
-      }
-
-      $qrcodeValues = Qrcode::getQrcodeValues($contactID, $participantID);
-
-      // First ensure the image file is created.
-      Qrcode::createQrcodeImage($participantID, $qrcodeValues);
-
-      // Get the absolute link to the image that will display the QR code.
-      $link = qrcodecheckin_get_image_url($qrcodeValues['filename']);
-
-      $row->tokens(
-        self::$entityName,
-        'qrcode_url_' . $eventID,
-        $link
-      );
-      $row->tokens(
-        self::$entityName,
-        'qrcode_html_' . $eventID,
-        '<div></div><img alt="QR Code with participant details" src="' . $link .
-        '"></div><div>If you do not see a code display above, ' .
-        'please enable the display of images in your email ' .
-        'program or try accessing it <a href="' . $link . '">directly</a>. ' .
-        'You may want to take a screen grab of your QR Code in case you need ' .
-        'to display it when you do not have Internet access.</div>' .
-        '<br />'
-      );
     }
   }
 
